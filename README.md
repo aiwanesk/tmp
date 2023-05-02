@@ -59,3 +59,36 @@ func main() {
 
 	logger.Printf("Processed %d requests\n", count)
 }
+
+-----------------------------
+
+func sendNotification(serviceName string, message string) error {
+	notification := Notification{ServiceName: serviceName, Message: message}
+
+	jsonNotification, err := json.Marshal(notification)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", "http://localhost:8080/notification", bytes.NewBuffer(jsonNotification))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	client := &http.Client{}
+	resp, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer resp.Body.Close()
+
+	return nil
+}
+
+func main(){
+	fmt.Println("start")
+	sendNotification("trade", "trade")
+}
